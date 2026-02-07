@@ -1,0 +1,74 @@
+[
+  {
+    "id": "uuid-001",
+    "name": "Company Portal",
+    "tags": "internal, hr, news, documents",
+    "url": "https://portal.yourcompany.com",
+    "icon": "🏛",
+    "group": "Internal Tools",
+    "description": "Main access point for company resources."
+  },
+  {
+    "id": "uuid-002",
+    "name": "Sales CRM",
+    "tags": "sales, clients, leads, external",
+    "url": "https://crm.yourcompany.com",
+    "icon": "https://crm.yourcompany.com/favicon.ico",
+    "group": "Client Facing",
+    "description": "Customer Relationship Management"
+  },
+  {
+    "id": "uuid-003",
+    "name": "Ops Constellation",
+    "tags": "operations, monitoring, uptime, alerts",
+    "url": "https://ops.yourcompany.com",
+    "icon": "🛰",
+    "group": "Infrastructure",
+    "description": "Unified status, alerts, and incident timelines."
+  },
+  {
+    "id": "uuid-004",
+    "name": "Pulse Analytics",
+    "tags": "analytics, insights, metrics",
+    "url": "https://analytics.yourcompany.com",
+    "icon": "📊",
+    "group": "Insights",
+    "description": "Decision-grade data dashboards."
+  },
+  {
+    "id": "uuid-005",
+    "name": "Design Forge",
+    "tags": "design, prototype, ui, ux",
+    "url": "https://design.yourcompany.com",
+    "icon": "🎨",
+    "group": "Creative",
+    "description": "Collaborative design and prototyping space."
+  },
+  {
+    "id": "uuid-006",
+    "name": "Legal Vault",
+    "tags": "contracts, legal, compliance",
+    "url": "https://legal.yourcompany.com",
+    "icon": "⚖️",
+    "group": "Governance",
+    "description": "Contract lifecycles and policy control."
+  },
+  {
+    "id": "uuid-007",
+    "name": "Support Orbit",
+    "tags": "support, tickets, helpdesk, customers",
+    "url": "https://support.yourcompany.com",
+    "icon": "🧭",
+    "group": "Customer Experience",
+    "description": "Unified queue for customer success."
+  },
+  {
+    "id": "uuid-008",
+    "name": "Partner Lattice",
+    "tags": "partners, alliances, channel",
+    "url": "https://partners.yourcompany.com",
+    "icon": "🤝",
+    "group": "Ecosystem",
+    "description": "Partner enablement and resource hub."
+  }
+]

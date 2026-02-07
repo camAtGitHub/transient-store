@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Transient Store · Business Launcher</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Urbanist:wght@300;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/ress/dist/ress.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js" defer></script>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b0d17;
+      --bg-alt: #12162b;
+      --surface: rgba(17, 23, 45, 0.72);
+      --surface-strong: rgba(22, 32, 64, 0.9);
+      --text: #eef4ff;
+      --muted: #a0b0d8;
+      --accent: #7cf0ff;
+      --accent-2: #ff7ce0;
+      --glow: 0 0 18px rgba(124, 240, 255, 0.45);
+      --shadow: 0 18px 60px rgba(5, 10, 30, 0.45);
+    }
+
+    [data-theme="light"] {
+      color-scheme: light;
+      --bg: #eef2ff;
+      --bg-alt: #ffffff;
+      --surface: rgba(255, 255, 255, 0.72);
+      --surface-strong: rgba(244, 246, 255, 0.9);
+      --text: #0c1435;
+      --muted: #52618f;
+      --accent: #2b5bff;
+      --accent-2: #ff5fab;
+      --glow: 0 0 20px rgba(43, 91, 255, 0.35);
+      --shadow: 0 18px 50px rgba(31, 55, 120, 0.2);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Space Grotesk", "Urbanist", system-ui, sans-serif;
+      background: radial-gradient(circle at top, rgba(124, 240, 255, 0.12), transparent 55%),
+        radial-gradient(circle at 30% 70%, rgba(255, 124, 224, 0.15), transparent 60%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow: hidden;
+      transition: background 0.8s ease, color 0.5s ease;
+    }
+
+    #app {
+      position: relative;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+    }
+
+    canvas#aurora {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      mix-blend-mode: screen;
+      opacity: 0.7;
+    }
+
+    .top-veil {
+      position: absolute;
+      inset: 2.5rem 2.5rem auto;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      z-index: 5;
+    }
+
+    .brand {
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .search-orbit {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.9rem 1.2rem;
+      border-radius: 999px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      min-width: 320px;
+    }
+
+    .search-orbit input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-size: 1rem;
+      width: 100%;
+    }
+
+    .search-orbit span {
+      color: var(--accent);
+      filter: drop-shadow(var(--glow));
+    }
+
+    .result-count {
+      margin-left: auto;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    #field {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      padding: 6rem 2rem 2rem;
+    }
+
+    #constellation {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    .node {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.65rem 1rem 0.65rem 0.85rem;
+      border-radius: 999px;
+      background: var(--surface);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text);
+      box-shadow: 0 12px 35px rgba(5, 10, 30, 0.35);
+      backdrop-filter: blur(12px);
+      transition: transform 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
+      cursor: pointer;
+    }
+
+    .node:hover {
+      box-shadow: 0 14px 45px rgba(5, 10, 30, 0.5);
+      transform: translate(-50%, -50%) scale(1.03);
+    }
+
+    .node.is-active {
+      outline: 2px solid var(--accent);
+      box-shadow: 0 0 30px rgba(124, 240, 255, 0.55);
+    }
+
+    .node.is-filtered {
+      pointer-events: none;
+    }
+
+    .node .icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--surface-strong);
+      display: grid;
+      place-items: center;
+      font-size: 1.1rem;
+      color: var(--accent);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .node .icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .node .meta {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    .node .meta strong {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .node .meta small {
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    .node .badge {
+      font-size: 0.65rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      background: rgba(124, 240, 255, 0.15);
+      color: var(--accent);
+      margin-left: 0.35rem;
+    }
+
+    .node .delete {
+      margin-left: 0.35rem;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255, 124, 224, 0.15);
+      color: var(--accent-2);
+      font-size: 0.75rem;
+      display: grid;
+      place-items: center;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .node:hover .delete {
+      opacity: 1;
+    }
+
+    .control-pod {
+      position: absolute;
+      right: 2.5rem;
+      bottom: 2.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      z-index: 6;
+    }
+
+    .control-pod button {
+      border: none;
+      background: var(--surface);
+      color: var(--text);
+      padding: 0.75rem 1rem;
+      border-radius: 1rem;
+      font-size: 0.85rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+      transition: transform 0.3s ease, background 0.3s ease;
+    }
+
+    .control-pod button:hover {
+      transform: translateY(-3px) scale(1.02);
+      background: var(--surface-strong);
+    }
+
+    .hotkey-dock {
+      position: absolute;
+      left: 50%;
+      bottom: 2.5rem;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      z-index: 5;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .hotkey {
+      padding: 0.4rem 0.6rem;
+      border-radius: 999px;
+      background: var(--surface);
+      font-size: 0.75rem;
+      color: var(--muted);
+      box-shadow: var(--shadow);
+    }
+
+    dialog {
+      border: none;
+      border-radius: 1.5rem;
+      padding: 0;
+      max-width: 520px;
+      width: 90vw;
+      background: var(--surface-strong);
+      color: var(--text);
+      box-shadow: var(--shadow);
+    }
+
+    dialog::backdrop {
+      background: rgba(6, 12, 32, 0.65);
+      backdrop-filter: blur(3px);
+    }
+
+    .dialog-content {
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .dialog-content h2 {
+      font-size: 1.2rem;
+    }
+
+    .dialog-content label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+    }
+
+    .dialog-content input,
+    .dialog-content textarea {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 0.9rem;
+      padding: 0.6rem 0.8rem;
+      color: var(--text);
+      font-size: 0.9rem;
+    }
+
+    .dialog-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+    }
+
+    .dialog-actions button {
+      border: none;
+      padding: 0.6rem 1rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      background: var(--accent);
+      color: #0a0f1c;
+    }
+
+    .dialog-actions button.secondary {
+      background: rgba(255, 255, 255, 0.12);
+      color: var(--text);
+    }
+
+    .toast {
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--surface);
+      padding: 0.8rem 1.2rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 7;
+    }
+
+    @keyframes drift {
+      0% {
+        transform: translate(-50%, -50%) translateY(-4px);
+      }
+      50% {
+        transform: translate(-50%, -50%) translateY(4px);
+      }
+      100% {
+        transform: translate(-50%, -50%) translateY(-4px);
+      }
+    }
+
+    @media (max-width: 900px) {
+      .top-veil {
+        inset: 1.5rem;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .control-pod {
+        right: 1.5rem;
+        bottom: 1.5rem;
+      }
+
+      .node {
+        padding: 0.5rem 0.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app" data-theme="dark">
+    <canvas id="aurora"></canvas>
+    <header class="top-veil">
+      <div class="brand">Transient Store / Hyper Launcher</div>
+      <div class="search-orbit">
+        <span>⌕</span>
+        <input id="search" type="search" placeholder="Search everything..." autocomplete="off" />
+        <div class="result-count" id="resultCount">--</div>
+      </div>
+    </header>
+
+    <main id="field">
+      <div id="constellation"></div>
+    </main>
+
+    <div class="control-pod">
+      <button id="addButton">Add Link</button>
+      <button id="importButton">Import</button>
+      <button id="exportButton">Export</button>
+      <button id="resetButton">Reset</button>
+      <button id="themeButton">Toggle Theme</button>
+    </div>
+
+    <div class="hotkey-dock" id="hotkeyDock"></div>
+    <div class="toast" id="toast"></div>
+
+    <dialog id="addDialog">
+      <form class="dialog-content" method="dialog" id="addForm">
+        <h2>Seed a new portal</h2>
+        <label for="nameInput">Title</label>
+        <input id="nameInput" name="name" required />
+        <label for="urlInput">URL</label>
+        <input id="urlInput" name="url" required />
+        <label for="iconInput">Favicon or Emoji</label>
+        <input id="iconInput" name="icon" placeholder="🧭 or https://.../favicon.ico" />
+        <label for="groupInput">Group</label>
+        <input id="groupInput" name="group" placeholder="Internal Tools" />
+        <label for="tagsInput">Tags (comma separated)</label>
+        <input id="tagsInput" name="tags" />
+        <label for="descriptionInput">Description</label>
+        <input id="descriptionInput" name="description" />
+        <div class="dialog-actions">
+          <button type="button" class="secondary" data-close>Cancel</button>
+          <button type="submit">Create</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="importDialog">
+      <form class="dialog-content" method="dialog" id="importForm">
+        <h2>Import launcher configuration</h2>
+        <label for="importTextarea">Paste JSON</label>
+        <textarea id="importTextarea" rows="6" placeholder='[ { "id": "...", "name": "..." } ]'></textarea>
+        <label for="importFile">Or load a file</label>
+        <input id="importFile" type="file" accept="application/json" />
+        <div class="dialog-actions">
+          <button type="button" class="secondary" data-close>Cancel</button>
+          <button type="submit">Import</button>
+        </div>
+      </form>
+    </dialog>
+  </div>
+
+  <script>
+    const RANDOM_WORKS_X3 = ["nebula", "orchid", "quartz"];
+    console.info("Animation inspiration:", RANDOM_WORKS_X3.join(" · "));
+
+    const searchInput = document.getElementById("search");
+    const constellation = document.getElementById("constellation");
+    const resultCount = document.getElementById("resultCount");
+    const hotkeyDock = document.getElementById("hotkeyDock");
+    const toast = document.getElementById("toast");
+    const addDialog = document.getElementById("addDialog");
+    const addForm = document.getElementById("addForm");
+    const importDialog = document.getElementById("importDialog");
+    const importForm = document.getElementById("importForm");
+    const themeButton = document.getElementById("themeButton");
+    const resetButton = document.getElementById("resetButton");
+
+    const ANIMATION_STYLES = [
+      {
+        name: "Nebula Bloom",
+        hide: { scale: 0.2, opacity: 0, rotate: "-45deg", duration: 420 },
+        show: { scale: [0.6, 1], opacity: [0, 1], rotate: ["25deg", "0deg"], duration: 520 },
+      },
+      {
+        name: "Orchid Drift",
+        hide: { translateY: -18, opacity: 0, duration: 320 },
+        show: { translateY: [18, 0], opacity: [0, 1], duration: 420 },
+      },
+      {
+        name: "Quartz Pulse",
+        hide: { scale: 1.4, opacity: 0, duration: 380 },
+        show: { scale: [0.4, 1], opacity: [0, 1], duration: 380 },
+      },
+    ];
+
+    const chosenAnimation = ANIMATION_STYLES[Math.floor(Math.random() * ANIMATION_STYLES.length)];
+    console.info("Launcher animation style:", chosenAnimation.name);
+
+    let items = [];
+    let nodeMap = new Map();
+    let visibleItems = [];
+    let activeIndex = 0;
+
+    const storageKey = "transient-store-items";
+
+    const loadData = async () => {
+      const local = localStorage.getItem(storageKey);
+      if (local) {
+        items = JSON.parse(local);
+        return;
+      }
+      const response = await fetch("data.json");
+      items = await response.json();
+    };
+
+    const saveData = () => {
+      localStorage.setItem(storageKey, JSON.stringify(items));
+    };
+
+    const toastMessage = (message) => {
+      toast.textContent = message;
+      anime({
+        targets: toast,
+        opacity: [0, 1],
+        scale: [0.9, 1],
+        duration: 300,
+        easing: "easeOutQuad",
+        complete: () =>
+          anime({
+            targets: toast,
+            opacity: [1, 0],
+            duration: 600,
+            delay: 800,
+            easing: "easeInQuad",
+          }),
+      });
+    };
+
+    const fuzzyScore = (query, text) => {
+      if (!query) return 1;
+      let score = 0;
+      let qIndex = 0;
+      const lowerText = text.toLowerCase();
+      const lowerQuery = query.toLowerCase();
+      for (let i = 0; i < lowerText.length && qIndex < lowerQuery.length; i += 1) {
+        if (lowerText[i] === lowerQuery[qIndex]) {
+          score += 1;
+          qIndex += 1;
+        }
+      }
+      if (lowerText.includes(lowerQuery)) score += lowerQuery.length * 1.5;
+      return qIndex === lowerQuery.length ? score : 0;
+    };
+
+    const layoutNodes = () => {
+      const { width, height } = constellation.getBoundingClientRect();
+      const maxRadius = Math.min(width, height) * 0.42;
+      const centerX = width * 0.52;
+      const centerY = height * 0.52;
+      const golden = 137.5;
+
+      visibleItems.forEach((item, index) => {
+        const node = nodeMap.get(item.id);
+        if (!node) return;
+        const radius = Math.sqrt(index / Math.max(visibleItems.length, 1)) * maxRadius + 60;
+        const angle = (index * golden + (item.seed || 0)) * (Math.PI / 180);
+        const x = centerX + radius * Math.cos(angle);
+        const y = centerY + radius * Math.sin(angle);
+        node.style.left = `${x}px`;
+        node.style.top = `${y}px`;
+        node.style.animationDelay = `${(index % 6) * 0.4}s`;
+      });
+    };
+
+    const render = () => {
+      constellation.innerHTML = "";
+      nodeMap.clear();
+
+      items.forEach((item) => {
+        const node = document.createElement("button");
+        node.className = "node";
+        node.dataset.id = item.id;
+        node.style.animation = "drift 6s ease-in-out infinite";
+        node.style.animationDelay = `${item.seed || 0}s`;
+
+        const iconWrap = document.createElement("div");
+        iconWrap.className = "icon";
+        if (item.icon?.startsWith("http")) {
+          const img = document.createElement("img");
+          img.src = item.icon;
+          img.alt = "";
+          iconWrap.appendChild(img);
+        } else {
+          iconWrap.textContent = item.icon || "✶";
+        }
+
+        const meta = document.createElement("div");
+        meta.className = "meta";
+        const title = document.createElement("strong");
+        title.textContent = item.name;
+        const detail = document.createElement("small");
+        detail.textContent = [item.group, item.description].filter(Boolean).join(" · ");
+        meta.appendChild(title);
+        if (detail.textContent) meta.appendChild(detail);
+
+        const badge = document.createElement("span");
+        badge.className = "badge";
+        badge.textContent = item.tags?.split(",")[0]?.trim() || "launch";
+
+        const deleteButton = document.createElement("button");
+        deleteButton.className = "delete";
+        deleteButton.type = "button";
+        deleteButton.textContent = "×";
+        deleteButton.addEventListener("click", (event) => {
+          event.stopPropagation();
+          removeItem(item.id);
+        });
+
+        node.append(iconWrap, meta, badge, deleteButton);
+        node.addEventListener("click", () => window.open(item.url, "_blank"));
+
+        constellation.appendChild(node);
+        nodeMap.set(item.id, node);
+      });
+      filterItems();
+    };
+
+    const applyAnimation = (targets, config) => {
+      if (!targets.length) return;
+      anime({
+        targets,
+        easing: "easeOutExpo",
+        ...config,
+      });
+    };
+
+    const filterItems = () => {
+      const query = searchInput.value.trim();
+      visibleItems = [];
+
+      items.forEach((item) => {
+        const searchable = [item.name, item.tags, item.url, item.group, item.description]
+          .filter(Boolean)
+          .join(" ");
+        const score = fuzzyScore(query, searchable);
+        const node = nodeMap.get(item.id);
+
+        if (score > 0) {
+          visibleItems.push({ ...item, score });
+          node.classList.remove("is-filtered");
+          node.style.pointerEvents = "auto";
+        } else {
+          node.classList.add("is-filtered");
+          node.style.pointerEvents = "none";
+        }
+      });
+
+      visibleItems.sort((a, b) => b.score - a.score);
+      visibleItems = visibleItems.map((item) => items.find((i) => i.id === item.id));
+      resultCount.textContent = `${visibleItems.length} shown`;
+      activeIndex = 0;
+
+      const hiddenNodes = Array.from(document.querySelectorAll(".node.is-filtered"));
+      const shownNodes = Array.from(document.querySelectorAll(".node:not(.is-filtered)"));
+
+      applyAnimation(hiddenNodes, chosenAnimation.hide);
+      applyAnimation(shownNodes, chosenAnimation.show);
+
+      layoutNodes();
+      updateHotkeys();
+      highlightActive();
+    };
+
+    const highlightActive = () => {
+      const nodes = Array.from(document.querySelectorAll(".node"));
+      nodes.forEach((node) => node.classList.remove("is-active"));
+      const activeItem = visibleItems[activeIndex];
+      if (!activeItem) return;
+      nodeMap.get(activeItem.id)?.classList.add("is-active");
+    };
+
+    const updateHotkeys = () => {
+      hotkeyDock.innerHTML = "";
+      if (visibleItems.length > 0 && visibleItems.length <= 9) {
+        visibleItems.forEach((item, index) => {
+          const key = document.createElement("div");
+          key.className = "hotkey";
+          key.textContent = `${index + 1} · ${item.name}`;
+          hotkeyDock.appendChild(key);
+        });
+      }
+    };
+
+    const removeItem = (id) => {
+      items = items.filter((item) => item.id !== id);
+      saveData();
+      toastMessage("Portal released.");
+      render();
+    };
+
+    const resetData = async () => {
+      localStorage.removeItem(storageKey);
+      await loadData();
+      render();
+      toastMessage("Reset to original constellation.");
+      anime({
+        targets: ".node",
+        scale: [0.6, 1],
+        opacity: [0, 1],
+        delay: anime.stagger(20),
+        easing: "easeOutQuad",
+      });
+    };
+
+    searchInput.addEventListener("input", () => {
+      filterItems();
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        searchInput.value = "";
+        filterItems();
+        anime({
+          targets: ".node",
+          scale: [0.8, 1],
+          opacity: [0, 1],
+          delay: anime.stagger(12),
+        });
+        toastMessage("Field restored.");
+      }
+
+      if (visibleItems.length === 0) return;
+
+      if (["ArrowRight", "ArrowDown"].includes(event.key)) {
+        activeIndex = (activeIndex + 1) % visibleItems.length;
+        highlightActive();
+      }
+
+      if (["ArrowLeft", "ArrowUp"].includes(event.key)) {
+        activeIndex = (activeIndex - 1 + visibleItems.length) % visibleItems.length;
+        highlightActive();
+      }
+
+      if (event.key === "Enter") {
+        if (visibleItems.length === 1) {
+          window.open(visibleItems[0].url, "_blank");
+        } else if (visibleItems[activeIndex]) {
+          window.open(visibleItems[activeIndex].url, "_blank");
+        }
+      }
+
+      if (/^[1-9]$/.test(event.key) && visibleItems.length <= 9) {
+        const index = Number(event.key) - 1;
+        const item = visibleItems[index];
+        if (item) window.open(item.url, "_blank");
+      }
+    });
+
+    themeButton.addEventListener("click", () => {
+      const app = document.getElementById("app");
+      const isLight = app.getAttribute("data-theme") === "light";
+      app.setAttribute("data-theme", isLight ? "dark" : "light");
+      toastMessage(isLight ? "Drift into night mode." : "Summon daylight mode.");
+    });
+
+    resetButton.addEventListener("click", () => {
+      resetData();
+    });
+
+    document.querySelectorAll("[data-close]").forEach((button) => {
+      button.addEventListener("click", () => {
+        button.closest("dialog").close();
+      });
+    });
+
+    document.getElementById("addButton").addEventListener("click", () => addDialog.showModal());
+    document.getElementById("importButton").addEventListener("click", () => importDialog.showModal());
+
+    addForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const formData = new FormData(addForm);
+      const newItem = {
+        id: crypto.randomUUID(),
+        name: formData.get("name").trim(),
+        url: formData.get("url").trim(),
+        icon: formData.get("icon")?.trim() || "✶",
+        group: formData.get("group")?.trim(),
+        tags: formData.get("tags")?.trim(),
+        description: formData.get("description")?.trim(),
+        seed: Math.random() * 10,
+      };
+      items.unshift(newItem);
+      saveData();
+      addDialog.close();
+      addForm.reset();
+      render();
+      toastMessage("New portal forged.");
+    });
+
+    importForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const textareaValue = document.getElementById("importTextarea").value.trim();
+      if (!textareaValue) {
+        toastMessage("Paste JSON to import.");
+        return;
+      }
+      try {
+        const parsed = JSON.parse(textareaValue);
+        if (!Array.isArray(parsed)) throw new Error("Invalid format");
+        items = parsed.map((item) => ({
+          seed: Math.random() * 10,
+          ...item,
+        }));
+        saveData();
+        importDialog.close();
+        render();
+        toastMessage("Configuration absorbed.");
+      } catch (error) {
+        toastMessage("Import failed. Check JSON.");
+      }
+    });
+
+    document.getElementById("importFile").addEventListener("change", async (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+      const text = await file.text();
+      document.getElementById("importTextarea").value = text;
+    });
+
+    document.getElementById("exportButton").addEventListener("click", () => {
+      const blob = new Blob([JSON.stringify(items, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "launcher-export.json";
+      link.click();
+      URL.revokeObjectURL(url);
+      toastMessage("Export delivered.");
+    });
+
+    const animateAurora = () => {
+      const canvas = document.getElementById("aurora");
+      const ctx = canvas.getContext("2d");
+      const resize = () => {
+        canvas.width = window.innerWidth * devicePixelRatio;
+        canvas.height = window.innerHeight * devicePixelRatio;
+      };
+      resize();
+      window.addEventListener("resize", () => {
+        resize();
+        layoutNodes();
+      });
+
+      let t = 0;
+      const renderFrame = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const gradient = ctx.createRadialGradient(
+          canvas.width * 0.2,
+          canvas.height * 0.3,
+          40,
+          canvas.width * 0.5,
+          canvas.height * 0.5,
+          canvas.width * 0.6
+        );
+        gradient.addColorStop(0, `rgba(124, 240, 255, ${0.15 + Math.sin(t) * 0.05})`);
+        gradient.addColorStop(0.5, `rgba(255, 124, 224, ${0.12 + Math.cos(t * 0.7) * 0.05})`);
+        gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        t += 0.01;
+        requestAnimationFrame(renderFrame);
+      };
+      renderFrame();
+    };
+
+    const init = async () => {
+      await loadData();
+      items = items.map((item) => ({
+        seed: item.seed ?? Math.random() * 10,
+        ...item,
+      }));
+      render();
+      animateAurora();
+      searchInput.focus();
+    };
+
+    init();
+  </script>
+</body>
+</html>
