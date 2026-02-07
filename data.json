@@ -1,0 +1,65 @@
+[
+  {
+    "id": "uuid1",
+    "name": "Company Portal",
+    "tags": "internal, hr, news, documents",
+    "url": "https://portal.yourcompany.com",
+    "icon": "🏛",
+    "group": "Internal Tools",
+    "description": "Main access point for company resources."
+  },
+  {
+    "id": "uuid2",
+    "name": "Sales CRM",
+    "tags": "sales, clients, leads, external",
+    "url": "https://crm.yourcompany.com",
+    "icon": "https://crm.yourcompany.com/favicon.ico",
+    "group": "Client Facing",
+    "description": "Customer Relationship Management"
+  },
+  {
+    "id": "uuid3",
+    "name": "Design System",
+    "tags": "branding, ui, components, guidelines",
+    "url": "https://design.yourcompany.com",
+    "icon": "🎛",
+    "group": "Creative Ops",
+    "description": "Tokens, patterns, and reusable UI modules."
+  },
+  {
+    "id": "uuid4",
+    "name": "Analytics Pulse",
+    "tags": "metrics, kpi, dashboards, revenue",
+    "url": "https://analytics.yourcompany.com",
+    "icon": "📈",
+    "group": "Finance",
+    "description": "Live performance telemetry and forecasting."
+  },
+  {
+    "id": "uuid5",
+    "name": "Talent Hub",
+    "tags": "recruiting, hiring, pipeline, interviews",
+    "url": "https://talent.yourcompany.com",
+    "icon": "🧭",
+    "group": "People",
+    "description": "Candidate flow and onboarding workspace."
+  },
+  {
+    "id": "uuid6",
+    "name": "Incident Bridge",
+    "tags": "operations, uptime, pager, response",
+    "url": "https://ops.yourcompany.com",
+    "icon": "🚨",
+    "group": "Reliability",
+    "description": "Live incident response launchpad."
+  },
+  {
+    "id": "uuid7",
+    "name": "Vendor Vault",
+    "tags": "legal, contracts, procurement, vendors",
+    "url": "https://vendors.yourcompany.com",
+    "icon": "🧳",
+    "group": "Legal",
+    "description": "Agreements, renewals, and supplier intel."
+  }
+]
