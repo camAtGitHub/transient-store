@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fluxline Launcher</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ress/dist/ress.min.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="data:," />
+  </head>
+  <body>
+    <div class="aurora" aria-hidden="true"></div>
+
+    <header class="floating-shell">
+      <div class="brand">
+        <span class="brand__orb"></span>
+        <div>
+          <p class="eyebrow">Business Launcher</p>
+          <h1>Fluxline Constellation</h1>
+        </div>
+      </div>
+      <div class="actions">
+        <button id="modeToggle" class="ghost">Toggle Mode</button>
+        <button id="exportBtn" class="ghost">Export</button>
+        <label class="ghost file-btn">
+          Import
+          <input type="file" id="importInput" accept="application/json" />
+        </label>
+        <button id="addBtn" class="primary">Add Link</button>
+      </div>
+    </header>
+
+    <div class="search-drift">
+      <input
+        id="search"
+        type="text"
+        autocomplete="off"
+        spellcheck="false"
+        placeholder="Search everything…"
+      />
+      <div class="search-hint">
+        <span>Esc</span> reset · <span>Enter</span> launch · <span>Arrows</span> drift
+      </div>
+    </div>
+
+    <main>
+      <section id="constellation" aria-live="polite"></section>
+    </main>
+
+    <aside id="editor" class="panel" aria-hidden="true">
+      <form id="itemForm">
+        <h2>Launch Node</h2>
+        <label>
+          Name
+          <input name="name" type="text" required />
+        </label>
+        <label>
+          Tags (comma separated)
+          <input name="tags" type="text" />
+        </label>
+        <label>
+          URL
+          <input name="url" type="url" required />
+        </label>
+        <label>
+          Icon (emoji or image URL)
+          <input name="icon" type="text" />
+        </label>
+        <label>
+          Group
+          <input name="group" type="text" />
+        </label>
+        <label>
+          Description
+          <textarea name="description" rows="2"></textarea>
+        </label>
+        <div class="panel__actions">
+          <button type="button" id="closePanel" class="ghost">Cancel</button>
+          <button type="submit" class="primary">Save</button>
+        </div>
+      </form>
+    </aside>
+
+    <div id="hotkeys" class="hotkeys" aria-hidden="true"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
