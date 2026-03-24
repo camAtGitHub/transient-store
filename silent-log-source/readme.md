@@ -256,45 +256,63 @@ defaults:
   secondary_host_field: host.ip
 ```
 
-Each alert document records which field the identifier came from (`identifier_type: "primary"` or `"secondary"`).
+Each alert document records which field the identifier came from (`labels.identifier_type: "primary"` or `"secondary"`).
 
 ---
 
 ## Alert documents
 
-Each silent host produces one alert document written to OpenSearch. Here's what a document looks like:
+Each silent host produces one alert document written to OpenSearch. Alert documents follow [Elastic Common Schema (ECS)](https://www.elastic.co/guide/en/ecs/current/index.html) field naming conventions where a standard field exists. Custom operational fields that have no ECS equivalent are grouped under the `detection.*` and `labels.*` namespaces.
+
+Here's what a document looks like:
 
 ```json
 {
   "@timestamp": "2026-03-24T10:00:00Z",
-  "hostname": "db-01.prod.example.com",
-  "silence_hours": 31.4,
-  "last_seen": "2026-03-22T18:33:12.000Z",
-  "source_index_pattern": "logs-*",
-  "host_field": "host.hostname.keyword",
-  "identifier_type": "primary",
-  "environment": "production",
+  "message": "Host db-01.prod.example.com has been silent for 31.4 hours (last seen: 2026-03-22T18:33:12.000Z)",
+  "event": {
+    "kind": "alert",
+    "category": ["host"],
+    "type": ["info"],
+    "action": "silent_log_source"
+  },
+  "host": {
+    "name": "db-01.prod.example.com"
+  },
   "tags": ["infra", "log-monitoring"],
-  "alert_type": "silent_log_source",
-  "detection_run_id": "20260324-100000"
+  "labels": {
+    "environment": "production",
+    "detection_run_id": "20260324-100000",
+    "identifier_type": "primary"
+  },
+  "detection": {
+    "silence_hours": 31.4,
+    "last_seen": "2026-03-22T18:33:12.000Z",
+    "source_index_pattern": "logs-*",
+    "host_field": "host.hostname.keyword"
+  }
 }
 ```
 
-| Field | Description |
-|-------|-------------|
-| `@timestamp` | When the alert was generated (UTC) |
-| `hostname` | The host identifier — hostname or IP depending on which field it came from |
-| `silence_hours` | How long the host has actually been silent (not the threshold) |
-| `last_seen` | The timestamp of the host's last observed log |
-| `source_index_pattern` | Which index pattern triggered this alert |
-| `host_field` | The OpenSearch field the identifier was read from |
-| `identifier_type` | `"primary"` or `"secondary"` |
-| `environment` | From config |
-| `tags` | From config |
-| `alert_type` | Always `"silent_log_source"` — useful for filtering |
-| `detection_run_id` | Groups all alerts from a single detection cycle (`YYYYMMDD-HHMMSS` UTC) |
+| Field | ECS? | Description |
+|-------|------|-------------|
+| `@timestamp` | ✅ ECS core | When the alert was generated (UTC) |
+| `message` | ✅ ECS core | Human-readable summary combining host, silence duration, and last-seen time |
+| `event.kind` | ✅ ECS core | Always `"alert"` |
+| `event.category` | ✅ ECS core | Always `["host"]` |
+| `event.type` | ✅ ECS core | Always `["info"]` |
+| `event.action` | ✅ ECS core | Always `"silent_log_source"` — useful for filtering |
+| `host.name` | ✅ ECS core | The host identifier — hostname or IP depending on which field it came from |
+| `tags` | ✅ ECS core | From config |
+| `labels.environment` | ✅ ECS core | From config — the environment tag for this deployment |
+| `labels.detection_run_id` | ✅ ECS core | Groups all alerts from a single detection cycle (`YYYYMMDD-HHMMSS` UTC) |
+| `labels.identifier_type` | ✅ ECS core | `"primary"` or `"secondary"` — which host field the identifier came from |
+| `detection.silence_hours` | Custom | How long the host has actually been silent (not the threshold) |
+| `detection.last_seen` | Custom | Timestamp of the host's last observed log |
+| `detection.source_index_pattern` | Custom | Which index pattern triggered this alert |
+| `detection.host_field` | Custom | The OpenSearch field the identifier was read from |
 
-All alerts from a single run share the same `detection_run_id`, which makes it easy to query "show me everything from the last scan."
+All alerts from a single run share the same `labels.detection_run_id`, which makes it easy to query "show me everything from the last scan."
 
 ---
 

@@ -571,18 +571,38 @@ def build_alert_doc(
         else:
             host_field_used = secondary_host_field
 
+    timestamp = now.strftime('%Y-%m-%dT%H:%M:%SZ')
+    identifier = entry['identifier']
+    hours_silent = entry['hours_silent']
+    last_seen = entry['last_seen']
+
     return {
-        "@timestamp": now.strftime('%Y-%m-%dT%H:%M:%SZ'),
-        "hostname": entry['identifier'],
-        "silence_hours": entry['hours_silent'],
-        "last_seen": entry['last_seen'],
-        "source_index_pattern": index_config['name'],
-        "host_field": host_field_used,
-        "identifier_type": identifier_type,
-        "environment": config['environment'],
+        "@timestamp": timestamp,
+        "message": (
+            f"Host {identifier} has been silent for {hours_silent} hours "
+            f"(last seen: {last_seen})"
+        ),
+        "event": {
+            "kind": "alert",
+            "category": ["host"],
+            "type": ["info"],
+            "action": "silent_log_source",
+        },
+        "host": {
+            "name": identifier,
+        },
         "tags": config['tags'],
-        "alert_type": "silent_log_source",
-        "detection_run_id": detection_run_id,
+        "labels": {
+            "environment": config['environment'],
+            "detection_run_id": detection_run_id,
+            "identifier_type": identifier_type,
+        },
+        "detection": {
+            "silence_hours": hours_silent,
+            "last_seen": last_seen,
+            "source_index_pattern": index_config['name'],
+            "host_field": host_field_used,
+        },
     }
 
 
