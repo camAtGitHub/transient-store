@@ -17,7 +17,7 @@ import yaml
 __version__ = "1.0.0"
 
 # ---------------------------------------------------------------------------
-# TASK-01: CLI Parser
+# CLI Parser
 # ---------------------------------------------------------------------------
 
 def _parse_sleep_duration(value: str) -> int:
@@ -105,7 +105,7 @@ def parse_args() -> argparse.Namespace:
 
 
 # ---------------------------------------------------------------------------
-# TASK-02: Logging Subsystem
+# Logging Subsystem
 # ---------------------------------------------------------------------------
 
 class UTCFormatter(logging.Formatter):
@@ -166,7 +166,7 @@ def setup_logging(verbose: bool, log_file: str = "silent_log_detector.log") -> N
 
 
 # ---------------------------------------------------------------------------
-# TASK-03: Config Loader & Defaults Inheritance
+# Config Loader & Defaults Inheritance
 # ---------------------------------------------------------------------------
 
 def _parse_exclusions_file(filepath: str) -> list:
@@ -208,7 +208,7 @@ def load_config(config_path: str) -> dict:
         raw = yaml.safe_load(f)
 
     defaults = raw.get('defaults', {})
-    default_host_field = defaults.get('host_field', 'host.hostname.keyword')
+    default_host_field = defaults.get('host_field', 'host.hostname')
     default_secondary = defaults.get('secondary_host_field', None)
     default_baseline_days = defaults.get('baseline_days', 30)
     default_silence_hours = defaults.get('silence_hours', 24)
@@ -326,7 +326,7 @@ def load_config(config_path: str) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# TASK-04: Exclusion Engine
+# Exclusion Engine
 # ---------------------------------------------------------------------------
 
 def build_exclusion_set(raw_exclusions: list) -> list:
@@ -355,7 +355,7 @@ def is_excluded(identifier: str, patterns: list) -> bool:
 
 
 # ---------------------------------------------------------------------------
-# TASK-05: OpenSearch Session Builder
+# OpenSearch Session Builder
 # ---------------------------------------------------------------------------
 
 def build_session(args: argparse.Namespace) -> tuple:
@@ -404,7 +404,7 @@ def build_session(args: argparse.Namespace) -> tuple:
 
 
 # ---------------------------------------------------------------------------
-# TASK-06: Query Engine — Single Detection Pass
+# Query Engine — Single Detection Pass
 # ---------------------------------------------------------------------------
 
 def run_index_pass(
@@ -485,7 +485,7 @@ def run_index_pass(
 
 
 # ---------------------------------------------------------------------------
-# TASK-07: Dual-Field Consolidation
+# Dual-Field Consolidation
 # ---------------------------------------------------------------------------
 
 def consolidate_results(
@@ -545,7 +545,7 @@ def consolidate_results(
 
 
 # ---------------------------------------------------------------------------
-# TASK-08: Alert Document Builder
+# Alert Document Builder
 # ---------------------------------------------------------------------------
 
 def build_alert_doc(
@@ -587,7 +587,7 @@ def build_alert_doc(
 
 
 # ---------------------------------------------------------------------------
-# TASK-09: Bulk Alert Indexer
+# Bulk Alert Indexer
 # ---------------------------------------------------------------------------
 
 def bulk_write_alerts(
@@ -649,7 +649,7 @@ def bulk_write_alerts(
 
 
 # ---------------------------------------------------------------------------
-# TASK-10: Per-Index Detection Orchestrator
+# Per-Index Detection Orchestrator
 # ---------------------------------------------------------------------------
 
 def run_detection_cycle(
@@ -720,7 +720,7 @@ def run_detection_cycle(
 
 
 # ---------------------------------------------------------------------------
-# TASK-11: Daemon Loop
+# Daemon Loop
 # ---------------------------------------------------------------------------
 
 def daemon_loop(
@@ -761,7 +761,7 @@ def daemon_loop(
 
 
 # ---------------------------------------------------------------------------
-# TASK-12: main() Entry Point
+# main() Entry Point
 # ---------------------------------------------------------------------------
 
 def main() -> None:
