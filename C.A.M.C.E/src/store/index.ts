@@ -11,7 +11,8 @@ import type {
   ThreatIntelFinding,
   GraphNode,
   GraphData,
-  LayoutType
+  LayoutType,
+  NodeType
 } from '@/types';
 
 interface StoreActions {
@@ -51,7 +52,7 @@ interface StoreActions {
   // UI State
   setActivePanel: (panel: string) => void;
   setShowLegend: (show: boolean) => void;
-  toggleNodeTypeFilter: (type: string) => void;
+  toggleNodeTypeFilter: (type: NodeType) => void;
   toggleSeverityFilter: (severity: string) => void;
   setSearchTerm: (term: string) => void;
   
@@ -136,7 +137,7 @@ const initialState: Omit<AppState, keyof StoreActions> = {
 
 export const useStore = create<AppState & StoreActions>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       ...initialState,
       
       // Connection

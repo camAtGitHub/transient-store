@@ -107,15 +107,3 @@ export const PivotsPanel = () => {
 };
 
 export default PivotsPanel;
-        CRIT = High degree
-          </Badge>
-          <Badge variant="outline" className="text-xs border-[#FFD166]/30 text-[#FFD166]">
-            RARE = Low occurrence
-          </Badge>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default PivotsPanel;

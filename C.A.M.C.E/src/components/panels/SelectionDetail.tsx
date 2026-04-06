@@ -253,7 +253,3 @@ export const SelectionDetail = () => {
 };
 
 export default SelectionDetail;
- );
-};
-
-export default SelectionDetail;

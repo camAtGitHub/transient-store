@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect } from 'react';
 import { GraphVisualization } from '@/components/graph/GraphVisualization';
 import { Timeline } from '@/components/graph/Timeline';
 import { TopBar } from '@/components/panels/TopBar';
@@ -38,18 +38,6 @@ function App() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
-
-  const getLayoutOptions = useCallback((layoutType: LayoutType) => {
-    const options: Record<LayoutType, any> = {
-      fcose: { name: 'fcose', padding: 50, animate: true, fit: true },
-      cose: { name: 'cose', padding: 50, animate: true, fit: true },
-      concentric: { name: 'concentric', padding: 50, animate: true, fit: true },
-      grid: { name: 'grid', padding: 50, animate: true, fit: true },
-      breadthfirst: { name: 'breadthfirst', padding: 50, animate: true, fit: true },
-      circle: { name: 'circle', padding: 50, animate: true, fit: true }
-    };
-    return options[layoutType];
   }, []);
 
   return (
