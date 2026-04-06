@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import cytoscape from 'cytoscape';
 import fcose from 'cytoscape-fcose';
 import coseBilkent from 'cytoscape-cose-bilkent';
@@ -132,7 +132,7 @@ export const GraphVisualization = ({ onNodeClick }: GraphVisualizationProps) => 
               return 'rgba(242, 245, 255, 0.2)';
             },
             'transition-property': 'border-color, width, height',
-            'transition-duration': '0.2s'
+             'transition-duration': 200
           }
         },
         {

@@ -221,9 +221,6 @@ export interface AppState {
 // Severity Levels
 export type SeverityLevel = 'critical' | 'high' | 'medium' | 'low' | 'info';
 
-// Layout Type
-export type LayoutType = 'fcose' | 'concentric' | 'grid' | 'breadthfirst' | 'cose' | 'circle';
-
 export const SeverityColors: Record<SeverityLevel, string> = {
   critical: '#FF4D6D',
   high: '#FFD166',

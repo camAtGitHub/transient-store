@@ -57,12 +57,3 @@ export const Statistics = () => {
 };
 
 export default Statistics;
-</span></span>
-        <span className="text-white/20">|</span>
-        <span>Alerts: <span className="text-[#F2F5FF]">{alerts.length}</span></span>
-      </div>
-    </div>
-  );
-};
-
-export default Statistics;

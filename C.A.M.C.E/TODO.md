@@ -13,8 +13,8 @@
 [x] Build statistics and legend panels
 [x] Implement export/import and persistence
 [x] Add layout modes and graph interactions
-[-] Polish UI with glassmorphism and animations
-[ ] Build and deploy application as static-html file
+[x] Polish UI with glassmorphism and animations
+[x] Build and deploy application as static-html file
 
 
 
@@ -71,26 +71,26 @@ I'll focus on creating an immersive, high-performance cybersecurity visualizatio
 
 # CURRENT_ERRORS_TO_RESOLVE:
 
-ubuntu@sandbox:~ $ cd /mnt/okcomputer/output/app && npm run build 2>&1
-**Exit Code: 2**
+Resolved 2026-04-06:
+- The three recorded panel syntax errors were caused by duplicated trailing JSX/export fragments appended to:
+  - `src/components/panels/PivotsPanel.tsx`
+  - `src/components/panels/SelectionDetail.tsx`
+  - `src/components/panels/Statistics.tsx`
+- After removing those corrupt tails, a few follow-up TypeScript issues were also fixed:
+  - removed an unused `getLayoutOptions` helper from `src/App.tsx`
+  - removed an unused `useCallback` import and corrected Cytoscape transition typing in `src/components/graph/GraphVisualization.tsx`
+  - narrowed the node-type toggle action to `NodeType` and removed an unused persist callback arg in `src/store/index.ts`
+  - removed the duplicate `LayoutType` export in `src/types/index.ts`
+- Current status: `npm run build` now completes successfully and outputs the production static site in `dist/`.
 
+## Progress Notes
 
-> my-app@0.0.0 build
-> tsc -b && vite build
+- 2026-04-06: Installed existing dependencies with `npm ci` before trusting local build/lint output. Initial `eslint` / Node type failures were environment setup issues in the sandbox, not missing project files.
+- 2026-04-06: Verified the built app manually via `npm run preview -- --host 0.0.0.0 --port 4173`.
+- 2026-04-06: Confirmed the polished UI shell and working demo mode in the browser with populated graph stats, pivots, legend, and timeline.
 
-src/components/panels/PivotsPanel.tsx(110,21): error TS1005: ';' expected.
-src/components/panels/PivotsPanel.tsx(111,11): error TS1128: Declaration or statement expected.
-src/components/panels/PivotsPanel.tsx(115,9): error TS1128: Declaration or statement expected.
-src/components/panels/PivotsPanel.tsx(116,7): error TS1109: Expression expected.
-src/components/panels/PivotsPanel.tsx(117,5): error TS1109: Expression expected.
-src/components/panels/PivotsPanel.tsx(118,3): error TS1109: Expression expected.
-src/components/panels/PivotsPanel.tsx(119,1): error TS1128: Declaration or statement expected.
-src/components/panels/SelectionDetail.tsx(256,2): error TS1128: Declaration or statement expected.
-src/components/panels/SelectionDetail.tsx(257,1): error TS1128: Declaration or statement expected.
-src/components/panels/Statistics.tsx(60,1): error TS1128: Declaration or statement expected.
-src/components/panels/Statistics.tsx(60,8): error TS1109: Expression expected.
-src/components/panels/Statistics.tsx(61,9): error TS2657: JSX expressions must have one parent element.
-src/components/panels/Statistics.tsx(63,7): error TS1128: Declaration or statement expected.
-src/components/panels/Statistics.tsx(64,5): error TS1109: Expression expected.
-src/components/panels/Statistics.tsx(65,3): error TS1109: Expression expected.
-src/components/panels/Statistics.tsx(66,1): error TS1128: Declaration or statement expected.
+## Learnings / Notes To Self
+
+- If the compiler starts throwing impossible-looking JSX parser errors near the end of a panel file, check for accidental duplicate fragments appended after the correct `export default` line before assuming the component logic is broken.
+- Build validation for this project is `npm run build` (`tsc -b && vite build`). This is the command that proves the static-html output is healthy.
+- Manual verification is easiest with `npm run preview -- --host 0.0.0.0 --port 4173`, then load demo data to confirm the graph renders with meaningful counts and pivot content.
