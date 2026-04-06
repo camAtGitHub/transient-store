@@ -800,5 +800,5 @@ print("   Open it in your browser — zoom, hover, drag nodes!")
 # Reminder - YOUR TASK: 
 Your task is to create the most kick-ass correlation engine for integration against OpenSearch's security analytics platform. you are to create something awesome, visually stunning, but functional, more than functional, useful, and beyond expectations. it should either exist as an all-in-one HTML file or if you find the need to use node libraries and npm placed code. Just ensure that the final deliverable will compile a static HTML file.
 
-IF /C.A.M.C.E/TODO.md EXISTS THEN YOU MUST READ THAT FILE NEXT, AS IT WILL CONTAIN YOUR CURRENT PROGRESS! SO READ IT AND CONTINUE WHERE YOU LEFT OFF FROM!
+IF `<repo>/C.A.M.C.E/TODO.md` EXISTS THEN YOU MUST READ THAT FILE NEXT, AS IT WILL CONTAIN YOUR CURRENT PROGRESS! SO READ IT AND CONTINUE WHERE YOU LEFT OFF FROM!
  
