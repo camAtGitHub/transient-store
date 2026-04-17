@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>C.A.M.C.E — Correlation Engine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=IBM+Plex+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <h1>C.A.M.C.E</h1>
+        <p>Cyber Analytics Mesh Correlation Engine</p>
+      </div>
+      <div class="health" id="health"></div>
+    </header>
+
+    <aside class="left-panel">
+      <section>
+        <h2>Connection</h2>
+        <input id="host" placeholder="https://opensearch.local:9200" />
+        <input id="username" placeholder="username" />
+        <input id="password" type="password" placeholder="password" />
+        <button id="connectBtn">Connect + Fetch</button>
+      </section>
+
+      <section>
+        <h2>Time Range (UTC)</h2>
+        <div class="row">
+          <select id="relativeRange">
+            <option value="3600000">Last 1h</option>
+            <option value="14400000" selected>Last 4h</option>
+            <option value="43200000">Last 12h</option>
+            <option value="86400000">Last 1d</option>
+            <option value="604800000">Last 7d</option>
+          </select>
+          <button id="applyTime">Apply</button>
+        </div>
+        <small id="timeInfo"></small>
+      </section>
+
+      <section>
+        <h2>Correlation</h2>
+        <label><input type="checkbox" data-field="related.ip" checked> related.ip</label>
+        <label><input type="checkbox" data-field="related.user" checked> related.user</label>
+        <label><input type="checkbox" data-field="related.hosts" checked> related.hosts</label>
+        <label><input type="checkbox" data-field="related.email"> related.email</label>
+        <label><input type="checkbox" data-field="related.domain"> related.domain</label>
+        <input id="customFields" placeholder="custom fields (comma-separated)" />
+        <div class="row">
+          <input id="storyWindow" type="number" value="30" min="1" max="1440" />
+          <small>story mins</small>
+        </div>
+        <div class="row">
+          <input id="hubThreshold" type="number" value="5" min="2" max="100" />
+          <small>hub threshold</small>
+        </div>
+        <button id="rebuildGraph">Rebuild Correlation</button>
+      </section>
+
+      <section>
+        <h2>Exploration</h2>
+        <input id="searchBox" placeholder="search nodes (ip/user/host/id)" />
+        <div class="row">
+          <button id="focusSelection">Focus</button>
+          <button id="kHopBtn">Expand 2-Hop</button>
+        </div>
+        <div class="row">
+          <button id="shortestPathBtn">Shortest Path (A-B)</button>
+          <button id="resetView">Reset</button>
+        </div>
+        <div class="row">
+          <label><input id="riskOnly" type="checkbox"> High+ only</label>
+          <label><input id="clusterToggle" type="checkbox" checked> Cluster dense</label>
+        </div>
+        <div class="row">
+          <label><input id="labelsToggle" type="checkbox" checked> Adaptive labels</label>
+          <label><input id="reducedMotion" type="checkbox"> Reduced motion</label>
+        </div>
+      </section>
+
+      <section>
+        <h2>Timeline</h2>
+        <input id="timeline" type="range" min="0" max="100" value="100" />
+        <div class="row">
+          <button id="playBtn">Play</button>
+          <button id="pauseBtn">Pause</button>
+          <button id="rewindBtn">Rewind</button>
+        </div>
+      </section>
+    </aside>
+
+    <main class="graph-stage">
+      <canvas id="graphCanvas"></canvas>
+      <div id="tooltip" class="tooltip hidden"></div>
+      <div class="legend" id="legend"></div>
+    </main>
+
+    <aside class="right-panel">
+      <section>
+        <h2>Pivots</h2>
+        <div id="pivotContent"></div>
+      </section>
+      <section>
+        <h2>Selection</h2>
+        <pre id="selection"></pre>
+      </section>
+      <section>
+        <h2>History</h2>
+        <ol id="history"></ol>
+      </section>
+    </aside>
+  </div>
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>
