@@ -1,0 +1,62 @@
+:root {
+  --bg: #0b1116;
+  --panel: #121c24;
+  --ink: #dce7f0;
+  --muted: #8296aa;
+  --accent: #4ad7d1;
+  --critical: #f94144;
+  --high: #f3722c;
+  --medium: #f9c74f;
+  --low: #577590;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  color: var(--ink);
+  background: radial-gradient(circle at 15% -10%, #173041 0%, transparent 40%), var(--bg);
+  font-family: "IBM Plex Sans", sans-serif;
+}
+h1,h2 { font-family: "Cinzel", serif; letter-spacing: .05em; margin: 0 0 .5rem; }
+.app-shell {
+  display: grid;
+  grid-template-columns: 320px 1fr 340px;
+  grid-template-rows: 72px 1fr;
+  height: 100vh;
+}
+.topbar {
+  grid-column: 1 / 4;
+  background: linear-gradient(135deg, #0e151d, #182734);
+  display: flex; justify-content: space-between; align-items: center;
+  padding: .6rem 1rem;
+  border-bottom: 1px solid #203343;
+}
+.topbar p { margin: 0; color: var(--muted); font-size: .84rem; }
+.left-panel, .right-panel {
+  overflow: auto; padding: .75rem; background: color-mix(in oklab, var(--panel), black 10%);
+}
+section { margin-bottom: .8rem; padding: .7rem; background: rgba(255,255,255,.03); border: 1px solid #223a4b; border-radius: 10px; }
+input, select, button {
+  width: 100%; margin: .25rem 0; padding: .45rem; border-radius: 8px; border: 1px solid #2a4256;
+  background: #0f1922; color: var(--ink);
+}
+button { cursor: pointer; background: linear-gradient(180deg, #1a3344, #132633); }
+button:hover { filter: brightness(1.15); }
+label { display: block; margin: .2rem 0; color: #bad0e1; font-size: .92rem; }
+.row { display: flex; gap: .5rem; align-items: center; }
+.row > * { flex: 1; }
+.graph-stage { position: relative; overflow: hidden; background: #0c131a; }
+#graphCanvas { width: 100%; height: 100%; display: block; }
+.tooltip {
+  position: absolute; pointer-events: none; background: #091018; border: 1px solid #32506b;
+  padding: .5rem; border-radius: 8px; font-size: .82rem; max-width: 280px;
+}
+.hidden { display: none; }
+.legend {
+  position: absolute; left: .75rem; bottom: .75rem; background: rgba(8,14,21,.82); border: 1px solid #2a445a;
+  border-radius: 8px; padding: .5rem; font-size: .8rem;
+}
+pre { white-space: pre-wrap; word-break: break-word; color: #b8cedf; font-size: .8rem; }
+.health { font-size: .82rem; color: #93c7df; }
+.pivot-item { padding: .35rem; margin: .3rem 0; border-left: 3px solid var(--accent); background: rgba(27,49,65,.35); cursor: pointer; }
+.pivot-item:hover { background: rgba(49,86,111,.42); }
+@media (max-width: 1400px) { .app-shell { grid-template-columns: 280px 1fr 280px; } }
