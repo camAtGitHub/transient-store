@@ -1,0 +1,38 @@
+:root {
+  --bg: #0c111c;
+  --panel: #141c2b;
+  --panel2: #172236;
+  --text: #e5eefc;
+  --muted: #93a4c4;
+  --accent: #57b5ff;
+  --danger: #ff5f6d;
+  --ok: #48df95;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font-family: Inter, system-ui, sans-serif; background: radial-gradient(circle at top, #12233f, #0b101a 60%); color: var(--text); }
+.topbar { height: 52px; display: flex; align-items: center; justify-content: space-between; padding: 0 14px; background: #0f1727cc; border-bottom: 1px solid #2c3b58; }
+h1 { font-size: 16px; margin: 0; }
+.status { width: 11px; height: 11px; border-radius: 100%; }
+.status.loading { background: #ffaa00; }
+.status.live { background: var(--ok); box-shadow: 0 0 10px #48df95aa; }
+.status.error { background: var(--danger); }
+.layout { display: grid; grid-template-columns: 340px 1fr 330px; gap: 10px; height: calc(100vh - 52px); padding: 10px; }
+.left-panel, .right-panel { overflow: auto; display: flex; flex-direction: column; gap: 10px; }
+.card { background: linear-gradient(180deg, var(--panel), var(--panel2)); border: 1px solid #2b3a57; border-radius: 10px; padding: 10px; }
+.card h2 { margin: 0 0 8px; font-size: 14px; color: var(--accent); }
+label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 7px; }
+input, select, button { width: 100%; background: #0f1725; color: var(--text); border: 1px solid #3a4d72; border-radius: 7px; padding: 7px; margin-top: 4px; }
+button { cursor: pointer; font-weight: 600; }
+button:hover { border-color: var(--accent); }
+.actions { display: grid; gap: 8px; }
+.check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.graph-shell { position: relative; border: 1px solid #2b3a57; border-radius: 10px; overflow: hidden; background: #0b111d; }
+#graphCanvas { width: 100%; height: calc(100% - 34px); display: block; background-image: linear-gradient(#1b263b 1px, transparent 1px), linear-gradient(90deg, #1b263b 1px, transparent 1px); background-size: 30px 30px; }
+#timelineWrap { height: 34px; padding: 6px 8px; border-top: 1px solid #2b3a57; background: #111a2c; }
+#timeline { width: 100%; }
+.row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+pre { margin: 0; font-size: 12px; white-space: pre-wrap; }
+.scroll { max-height: 240px; overflow: auto; font-size: 12px; }
+.pivot-item { border-bottom: 1px solid #2c3b58; padding: 5px 0; display: flex; justify-content: space-between; gap: 8px; }
+.pivot-item button { width: auto; padding: 4px 8px; margin: 0; }
+@media (max-width: 1400px) { .layout { grid-template-columns: 290px 1fr 280px; } }
