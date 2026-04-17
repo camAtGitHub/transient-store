@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>C.A.M.C.E. Correlation Engine</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>C.A.M.C.E. Correlation Engine</h1>
+    <div id="statusDot" class="status loading" title="status"></div>
+  </header>
+
+  <main class="layout">
+    <aside class="left-panel">
+      <section class="card">
+        <h2>Connection</h2>
+        <label>Endpoint <input id="endpoint" placeholder="https://opensearch.local:9200" /></label>
+        <label>Username <input id="username" placeholder="admin" /></label>
+        <label>Password <input id="password" type="password" placeholder="••••••" /></label>
+      </section>
+
+      <section class="card">
+        <h2>Findings Query</h2>
+        <label>Max Findings <input id="maxFindings" type="number" value="5000" min="100" max="20000" /></label>
+        <label>Max Threat Intel <input id="maxIocs" type="number" value="5000" min="100" max="20000" /></label>
+        <label>Severity
+          <select id="severity">
+            <option value="">Any</option>
+            <option value="critical">Critical</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </select>
+        </label>
+        <label>Sort
+          <select id="sortOrder">
+            <option value="desc">Newest first</option>
+            <option value="asc">Oldest first</option>
+          </select>
+        </label>
+      </section>
+
+      <section class="card">
+        <h2>Time Range (UTC)</h2>
+        <label>Mode
+          <select id="timeMode">
+            <option value="relative">Relative</option>
+            <option value="absolute">Absolute</option>
+          </select>
+        </label>
+        <label>Relative
+          <select id="relativeRange">
+            <option value="4h">Last 4 hours</option>
+            <option value="24h" selected>Last 24 hours</option>
+            <option value="7d">Last 7 days</option>
+            <option value="30d">Last 30 days</option>
+          </select>
+        </label>
+        <label>Start <input id="startTime" type="datetime-local" /></label>
+        <label>End <input id="endTime" type="datetime-local" /></label>
+      </section>
+
+      <section class="card">
+        <h2>Correlation</h2>
+        <div class="check-grid">
+          <label><input type="checkbox" class="corr-field" value="related.ip" checked /> related.ip</label>
+          <label><input type="checkbox" class="corr-field" value="related.user" /> related.user</label>
+          <label><input type="checkbox" class="corr-field" value="related.hosts" /> related.hosts</label>
+          <label><input type="checkbox" class="corr-field" value="related.domain" /> related.domain</label>
+          <label><input type="checkbox" class="corr-field" value="related.email" /> related.email</label>
+        </div>
+        <label>Custom fields (comma-separated)
+          <input id="customFields" placeholder="process.name,user.name" />
+        </label>
+        <label>Story window (minutes)
+          <input id="storyWindow" type="number" value="30" min="1" max="720" />
+        </label>
+        <label>Max edges on first paint
+          <input id="maxInitialEdges" type="number" value="3000" min="100" max="20000" />
+        </label>
+      </section>
+
+      <section class="actions">
+        <button id="connectBtn">Connect + Fetch</button>
+        <button id="rebuildBtn">Rebuild Graph</button>
+        <button id="playBtn">Replay</button>
+      </section>
+    </aside>
+
+    <section class="graph-shell">
+      <canvas id="graphCanvas"></canvas>
+      <div id="timelineWrap">
+        <input id="timeline" type="range" min="0" max="100" value="100" />
+      </div>
+    </section>
+
+    <aside class="right-panel">
+      <section class="card">
+        <h2>Search & Actions</h2>
+        <label>Search node <input id="searchInput" placeholder="ip, user, host..." /></label>
+        <div class="row">
+          <button id="searchBtn">Find</button>
+          <button id="pathBtn">Shortest Path</button>
+          <button id="kHopBtn">2-Hop</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Telemetry</h2>
+        <pre id="telemetry"></pre>
+      </section>
+
+      <section class="card">
+        <h2>Pivots (Rarity)</h2>
+        <div id="pivots" class="scroll"></div>
+      </section>
+    </aside>
+  </main>
+
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>
