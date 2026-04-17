@@ -1,0 +1,57 @@
+:root {
+  --bg: #080c14;
+  --panel: #0f1b2d;
+  --panel-border: #1d3357;
+  --text: #d7e8ff;
+  --muted: #8da6c9;
+  --accent: #14f1ff;
+  --critical: #ff355e;
+  --high: #ff9f1c;
+  --medium: #f2d53c;
+  --low: #56cfe1;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  color: var(--text);
+  background: radial-gradient(circle at 20% 10%, #11213d 0%, var(--bg) 40%), var(--bg);
+  font-family: "IBM Plex Sans", sans-serif;
+}
+.topbar {
+  height: 56px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 16px; border-bottom: 1px solid var(--panel-border);
+  background: rgba(10, 19, 36, 0.9); backdrop-filter: blur(8px);
+}
+h1 { margin: 0; font-family: "Orbitron", sans-serif; font-size: 1rem; letter-spacing: 1px; }
+h1 span { color: var(--accent); }
+.status { font-weight: 600; font-size: .8rem; }
+.status::before { content: "● "; }
+.status.online { color: #5af78e; }
+.status.loading { color: #f3c969; }
+.status.offline { color: #ff6b6b; }
+
+.layout { display: grid; grid-template-columns: 320px 1fr 320px; height: calc(100vh - 56px); }
+.panel { padding: 12px; overflow: auto; border-right: 1px solid var(--panel-border); background: #0b1524d8; }
+.telemetry { border-left: 1px solid var(--panel-border); border-right: none; }
+section { border: 1px solid #1f355a; margin-bottom: 10px; padding: 10px; background: linear-gradient(170deg, #11223a75, #0a1525); }
+h2 { margin: 0 0 8px; font-size: .85rem; text-transform: uppercase; color: var(--accent); }
+input, button, select {
+  width: 100%; margin-bottom: 8px; background: #0a1930; color: var(--text);
+  border: 1px solid #27436f; padding: 8px; border-radius: 6px;
+}
+button { cursor: pointer; transition: .2s transform, .2s background; }
+button:hover { transform: translateY(-1px); background: #14355a; }
+label { display: block; font-size: .83rem; color: var(--muted); margin-bottom: 6px; }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+
+.graph-shell { position: relative; overflow: hidden; background:
+  linear-gradient(transparent 95%, rgba(71,110,161,.2) 96%),
+  linear-gradient(90deg, transparent 95%, rgba(71,110,161,.2) 96%),
+  #050b14;
+  background-size: 24px 24px;
+}
+#graphCanvas { width: 100%; height: 100%; display: block; }
+.overlay { position: absolute; top: 10px; left: 10px; color: #9cc7ff; font-size: .75rem; pointer-events: none; background:#0c1b30b0; padding: 6px 8px; border-radius: 6px; }
+.timeline { position: absolute; left: 10px; right: 10px; bottom: 10px; height: 52px; border: 1px solid #284777; background: #091628d0; border-radius: 8px; }
+pre { white-space: pre-wrap; word-break: break-word; font-size: .75rem; color: #c7dbf7; }
+.pivots button { text-align: left; margin-bottom: 6px; font-size: .8rem; }

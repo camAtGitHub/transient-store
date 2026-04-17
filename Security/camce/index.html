@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>C.A.M.C.E. Correlation Engine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>C.A.M.C.E. <span>Correlation Engine</span></h1>
+    <div id="statusDot" class="status offline">Offline</div>
+  </header>
+
+  <main class="layout">
+    <aside class="panel controls">
+      <section>
+        <h2>Connection</h2>
+        <input id="host" placeholder="https://opensearch.example:9200" />
+        <input id="username" placeholder="username" />
+        <input id="password" type="password" placeholder="password" />
+        <button id="connectBtn">Connect + Fetch</button>
+      </section>
+
+      <section>
+        <h2>Time Window (UTC)</h2>
+        <div class="row">
+          <select id="relativeRange">
+            <option value="3600000">Last 1 hour</option>
+            <option value="14400000" selected>Last 4 hours</option>
+            <option value="86400000">Last 1 day</option>
+            <option value="604800000">Last 7 days</option>
+          </select>
+          <button id="applyRelative">Apply</button>
+        </div>
+        <div class="row">
+          <input id="startAbs" type="datetime-local" />
+          <input id="endAbs" type="datetime-local" />
+        </div>
+        <button id="applyAbsolute">Apply Absolute</button>
+      </section>
+
+      <section>
+        <h2>Correlation</h2>
+        <label><input type="checkbox" class="corr" value="related.ip" checked /> related.ip</label>
+        <label><input type="checkbox" class="corr" value="related.user" checked /> related.user</label>
+        <label><input type="checkbox" class="corr" value="related.hosts" checked /> related.hosts</label>
+        <label><input type="checkbox" class="corr" value="related.email" /> related.email</label>
+        <label><input type="checkbox" class="corr" value="related.domain" /> related.domain</label>
+        <input id="customFields" placeholder="custom fields: process.name,source.ip" />
+        <div class="row">
+          <label>Hub threshold <input id="hubThreshold" type="number" value="6" min="2" /></label>
+          <label>Story min <input id="storyWindow" type="number" value="30" min="1" /></label>
+        </div>
+        <label><input id="temporalBridge" type="checkbox" checked /> Temporal bridges</label>
+        <label><input id="cooccurrence" type="checkbox" checked /> Entity co-occurrence mesh</label>
+        <button id="rebuildBtn">Rebuild Graph</button>
+      </section>
+
+      <section>
+        <h2>Exploration</h2>
+        <input id="searchNode" placeholder="Search node / entity" />
+        <button id="searchBtn">Focus Search</button>
+        <button id="pathBtn">Shortest Path (Shift-click 2 nodes)</button>
+        <button id="resetView">Reset Camera</button>
+      </section>
+
+      <section>
+        <h2>Timeline Replay</h2>
+        <div class="row">
+          <button id="playBtn">Play</button>
+          <button id="pauseBtn">Pause</button>
+          <button id="resetPlaybackBtn">Reset</button>
+        </div>
+        <label>Duration (sec) <input id="playbackDuration" type="number" value="20" min="4" /></label>
+      </section>
+    </aside>
+
+    <section class="graph-shell">
+      <canvas id="graphCanvas"></canvas>
+      <div id="overlay" class="overlay"></div>
+      <div id="timeline" class="timeline"></div>
+    </section>
+
+    <aside class="panel telemetry">
+      <h2>Telemetry</h2>
+      <pre id="stats"></pre>
+      <h2>Pivots</h2>
+      <div id="pivots" class="pivots"></div>
+      <h2>Node Detail</h2>
+      <pre id="nodeDetail"></pre>
+    </aside>
+  </main>
+
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>
