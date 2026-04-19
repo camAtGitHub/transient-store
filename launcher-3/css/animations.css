@@ -1,0 +1,68 @@
+/* ============================================================
+   Current — animations.css
+   Only ambient / decorative keyframes here. The heavy lifting
+   (filter / backspace / escape flourishes) is done imperatively
+   in JS so we can coordinate with physics.
+   ============================================================ */
+
+@keyframes bloom-breathe {
+  0%, 100% { transform: translate(-50%, -50%) scale(1);    opacity: .7; }
+  50%      { transform: translate(-50%, -50%) scale(1.08); opacity: .9; }
+}
+
+@keyframes halo-spin {
+  to { --halo-angle: 360deg; }
+}
+
+/* custom-property animation for conic-gradient */
+@property --halo-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes prompt-pulse {
+  0%, 100% { opacity: 1;   transform: translateX(-50%) translateY(0); }
+  50%      { opacity: .5;  transform: translateX(-50%) translateY(-2px); }
+}
+
+/* Item birth: used on initial reveal and when individually added */
+@keyframes item-birth {
+  0%   { opacity: 0; transform: var(--birth-from); filter: blur(8px); }
+  60%  { opacity: 1;                                filter: blur(0); }
+  100% { opacity: 1; transform: var(--birth-to);    filter: blur(0); }
+}
+
+/* Escape "release" — gentle outward sigh before settling back */
+@keyframes escape-sigh {
+  0%   { filter: blur(0);    }
+  30%  { filter: blur(3px);  }
+  100% { filter: blur(0);    }
+}
+
+/* Launch splash — item bursts then opens */
+@keyframes launch-splash {
+  0%   { transform: var(--tx) scale(1);    filter: brightness(1); }
+  40%  { transform: var(--tx) scale(1.2);  filter: brightness(1.6); }
+  100% { transform: var(--tx) scale(0);    filter: brightness(2) blur(4px); opacity: 0; }
+}
+
+/* Toast */
+@keyframes toast-in {
+  from { opacity: 0; transform: translate(-50%, 30px); }
+  to   { opacity: 1; transform: translate(-50%,  0);   }
+}
+
+/* focus ring shimmer for focused item */
+@keyframes focus-shimmer {
+  0%, 100% { box-shadow: 0 0 0 1.5px var(--accent) inset, 0 0 60px -14px var(--accent-glow); }
+  50%      { box-shadow: 0 0 0 1.5px var(--accent) inset, 0 0 90px -6px var(--accent-glow); }
+}
+.item.focused { animation: focus-shimmer 2.2s ease-in-out infinite; }
+
+/* variants: each variant scribbles a signature on the body, animations.js
+   uses these hints alongside runtime-driven transforms. */
+body[data-variant="dissolve"] .item[data-state="unmatch"]  { filter: blur(6px) saturate(.4); }
+body[data-variant="vapor"]    .item[data-state="unmatch"]  { filter: blur(10px) brightness(1.6); }
+body[data-variant="undertow"] .item[data-state="unmatch"]  { filter: saturate(.5) brightness(.8); }
+body[data-variant="ripple"]   .item[data-state="match"]    { transition: transform .4s cubic-bezier(.34, 1.56, .64, 1); }

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="color-scheme" content="dark light" />
+  <meta name="description" content="Current — a temporally-aware bookmark launcher that drifts, predicts, and surges." />
+  <title>Current · a temporal launcher</title>
+
+  <!-- Fonts: distinctive, characterful, not generic -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,300;1,9..144,500;1,9..144,700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@300;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/core.css" />
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+</head>
+<body class="theme-dark" data-variant="undertow">
+
+  <!-- Living flow-field backdrop -->
+  <canvas id="backdrop" aria-hidden="true"></canvas>
+
+  <!-- Radial "NOW" bloom at center -->
+  <div class="now-bloom" id="now-bloom" aria-hidden="true"></div>
+
+  <!-- Soft wordmark in the corner, barely there -->
+  <div class="wordmark" aria-hidden="true">
+    <span class="wm-sup">a temporal</span>
+    <em class="wm-main">Current</em>
+    <span class="wm-sub" id="wm-sub">drift · <span id="wm-context">—</span></span>
+  </div>
+
+  <!-- Top shell: clock read-out · search vessel · menu dot -->
+  <header class="top-shell" role="banner">
+
+    <div class="clock-read" id="clock-read" aria-hidden="true">
+      <span class="clock-time" id="clock-time">--:--</span>
+      <span class="clock-sub" id="clock-sub">—</span>
+    </div>
+
+    <div class="search-vessel" id="search-vessel" role="search">
+      <div class="vessel-halo"></div>
+      <svg class="vessel-sigil" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="10" cy="10" r="6" fill="none" stroke="currentColor" stroke-width="1.3"/>
+        <line x1="14.5" y1="14.5" x2="21" y2="21" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+      </svg>
+      <input
+        id="search"
+        type="text"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+        spellcheck="false"
+        placeholder="drift"
+        aria-label="search bookmarks"
+      />
+      <span class="vessel-count" id="vessel-count">0</span>
+      <span class="vessel-reed" id="vessel-reed" aria-hidden="true"></span>
+    </div>
+
+    <button class="menu-dot" id="menu-btn" aria-label="open panel" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+
+  </header>
+
+  <!-- The stage where bookmark-biomes drift -->
+  <main class="stage" id="stage" aria-label="bookmark field">
+    <div class="stage-ghost" id="stage-ghost" aria-hidden="true"></div>
+  </main>
+
+  <!-- Suggestion ribbon: why-now explainer rail -->
+  <div class="ribbon" id="ribbon" aria-live="polite" aria-hidden="true"></div>
+
+  <!-- Slide-in drawer panel -->
+  <aside class="drawer" id="drawer" aria-hidden="true">
+    <div class="drawer-inner">
+      <div class="drawer-head">
+        <em>Current</em>
+        <button class="drawer-close" id="drawer-close" aria-label="close">×</button>
+      </div>
+
+      <section class="drawer-section">
+        <h3>Appearance</h3>
+        <button class="d-btn" data-act="theme">
+          <span class="d-icon">◐</span><span>Flip theme</span>
+        </button>
+      </section>
+
+      <section class="drawer-section">
+        <h3>Bookmarks</h3>
+        <button class="d-btn" data-act="add"><span class="d-icon">＋</span><span>Add bookmark</span></button>
+        <button class="d-btn" data-act="manage"><span class="d-icon">≡</span><span>Manage all</span></button>
+        <button class="d-btn" data-act="export-data"><span class="d-icon">↑</span><span>Export bookmarks</span></button>
+        <button class="d-btn" data-act="import-data"><span class="d-icon">↓</span><span>Import bookmarks</span></button>
+      </section>
+
+      <section class="drawer-section">
+        <h3>Learned brain</h3>
+        <button class="d-btn" data-act="insights"><span class="d-icon">✦</span><span>Insights · why it ranks that</span></button>
+        <button class="d-btn" data-act="export-brain"><span class="d-icon">↥</span><span>Export brain</span></button>
+        <button class="d-btn" data-act="import-brain"><span class="d-icon">↧</span><span>Import brain</span></button>
+        <button class="d-btn d-danger" data-act="reset-brain"><span class="d-icon">⟲</span><span>Reset brain</span></button>
+      </section>
+
+      <section class="drawer-section small">
+        <h3>Keys</h3>
+        <dl class="keylist">
+          <dt>↑↓←→</dt><dd>navigate visible</dd>
+          <dt>↵</dt><dd>launch focused / only match</dd>
+          <dt>1–9</dt><dd>launch by hotkey (when ≤9 remain)</dd>
+          <dt>⌫</dt><dd>backspace · reform</dd>
+          <dt>esc</dt><dd>release · restore tide</dd>
+          <dt>⌘/ctrl+e</dt><dd>toggle explain mode</dd>
+        </dl>
+      </section>
+
+      <footer class="drawer-foot">
+        <span id="stat-items">0 items</span> ·
+        <span id="stat-clicks">0 clicks learned</span> ·
+        <span id="stat-variant">—</span>
+      </footer>
+    </div>
+  </aside>
+
+  <!-- Modal layer for add/edit/manage/insights/import -->
+  <div class="modal-root" id="modal-root" aria-hidden="true"></div>
+
+  <!-- Transient toast -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Hidden file input used by import actions -->
+  <input type="file" id="file-input" accept="application/json,.json" hidden />
+
+  <script type="module" src="js/main.js"></script>
+  
+
+</body>
+</html>

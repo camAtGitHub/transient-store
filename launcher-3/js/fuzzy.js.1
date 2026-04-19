@@ -1,0 +1,60 @@
+// js/fuzzy.js
+// Self-contained fuzzy matcher with proximity scoring.
+// Scores each item against a query. Returns 0 when no match at all.
+// Field weights: name > tags > group > description.
+
+const WORD_BOUNDARY = /[\s,.\-_/|]/;
+
+function scoreField(query, text) {
+  if (!text || !query) return 0;
+  const q = query.toLowerCase();
+  const t = text.toLowerCase();
+
+  // Exact substring — best case
+  const idx = t.indexOf(q);
+  if (idx !== -1) {
+    // Prefix / word-start bonus
+    const isPrefix = idx === 0;
+    const isWordStart = idx > 0 && WORD_BOUNDARY.test(t[idx - 1]);
+    return 1000 + (isPrefix ? 400 : 0) + (isWordStart ? 200 : 0) - idx;
+  }
+
+  // Subsequence with proximity bonus
+  let qi = 0, score = 0, lastIdx = -1, runs = 0, inRun = false;
+  for (let ti = 0; ti < t.length && qi < q.length; ti++) {
+    if (t[ti] === q[qi]) {
+      const gap = lastIdx === -1 ? 0 : ti - lastIdx - 1;
+      const wordStartBonus = (ti === 0 || WORD_BOUNDARY.test(t[ti - 1])) ? 40 : 0;
+      score += Math.max(1, 20 - gap * 2) + wordStartBonus;
+      if (gap === 0 && inRun) runs += 1; else runs = 1;
+      score += runs * 3;
+      inRun = true;
+      lastIdx = ti;
+      qi++;
+    } else {
+      inRun = false;
+    }
+  }
+  return qi === q.length ? score : 0;
+}
+
+export function fuzzyScore(query, item) {
+  if (!query) return 1; // neutral pass
+  const q = query.trim().toLowerCase();
+  if (!q) return 1;
+
+  const name  = item.name        || '';
+  const tags  = item.tags        || '';
+  const group = item.group       || '';
+  const desc  = item.description || '';
+  const url   = item.url         || '';
+
+  const sName  = scoreField(q, name)  * 1.0;
+  const sTags  = scoreField(q, tags)  * 0.7;
+  const sGroup = scoreField(q, group) * 0.6;
+  const sDesc  = scoreField(q, desc)  * 0.4;
+  const sUrl   = scoreField(q, url)   * 0.35;
+
+  const total = sName + sTags + sGroup + sDesc + sUrl;
+  return total;
+}
