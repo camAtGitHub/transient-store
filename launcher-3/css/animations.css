@@ -66,3 +66,9 @@ body[data-variant="dissolve"] .item[data-state="unmatch"]  { filter: blur(6px) s
 body[data-variant="vapor"]    .item[data-state="unmatch"]  { filter: blur(10px) brightness(1.6); }
 body[data-variant="undertow"] .item[data-state="unmatch"]  { filter: saturate(.5) brightness(.8); }
 body[data-variant="ripple"]   .item[data-state="match"]    { transition: transform .4s cubic-bezier(.34, 1.56, .64, 1); }
+
+body[data-tier="minimal"] .item.focused,
+body[data-tier="minimal"] .bloom,
+body[data-tier="minimal"] .halo {
+  animation: none !important;
+}

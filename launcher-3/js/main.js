@@ -17,6 +17,7 @@ import { DataStore, cryptoUUID } from './data.js';
 import { Intelligence } from './intelligence.js';
 import { Animations } from './animations.js';
 import { Physics } from './physics.js';
+import { PerfTier } from './perf.js';
 import { Search } from './search.js';
 import { UI } from './ui.js';
 
@@ -33,6 +34,7 @@ const app = {
   store: null,
   intelligence: null,
   animations: null,
+  perf: null,
   physics: null,
   search: null,
   ui: null,
@@ -129,30 +131,34 @@ async function boot() {
   app.bookmarks = await app.store.load();
   for (const b of app.bookmarks) app.bookmarksById.set(b.id, b);
 
-  // 2. brain
+  // 2. session perf tier (fixed at boot; intentionally not re-evaluated mid-session)
+  app.perf = new PerfTier(app.bookmarks.length);
+  document.body.dataset.tier = app.perf.tier;
+
+  // 3. brain
   app.intelligence = new Intelligence(app);
 
-  // 3. animations + variant
+  // 4. animations + variant
   app.animations = new Animations(app);
   app.variant = app.animations.pickVariant();
   document.body.dataset.variant = app.variant;
 
-  // 4. physics
+  // 5. physics
   app.physics = new Physics(app);
   const scoreMap = app.intelligence.scoreAll(app.bookmarks);
   app.physics.build(app.bookmarks, scoreMap);
   rerankRelevance(app.physics.nodes, scoreMap);
 
-  // 5. search
+  // 6. search
   app.search = new Search(app);
 
-  // 6. ui
+  // 7. ui
   app.ui = new UI(app);
 
-  // 7. construct DOM, attach to stage
+  // 8. construct DOM, attach to stage
   mountNodes(app);
 
-  // 8. wire up & start
+  // 9. wire up & start
   app.search.init();
   app.ui.init();
   app.ui.updateStats();
@@ -179,7 +185,7 @@ async function boot() {
   }, 700);
 
   // Console banner — variant gossip
-  printBanner(app.variant, app.bookmarks.length);
+  printBanner(app.variant, app.bookmarks.length, app.perf.tier);
 }
 
 // ---------- DOM construction ----------
@@ -301,8 +307,8 @@ function rerankRelevance(nodes, scoreMap) {
 }
 
 // ---------- console banner ----------
-function printBanner(variant, count) {
-  const msg = `\n  ╭─────────────────────────────────────╮\n  │  Current · a temporal launcher      │\n  │  variant: ${variant.padEnd(28)}│\n  │  loaded ${String(count).padStart(3)} bookmarks${' '.repeat(18)}│\n  ╰─────────────────────────────────────╯\n`;
+function printBanner(variant, count, tier) {
+  const msg = `\n  ╭─────────────────────────────────────╮\n  │  Current · a temporal launcher      │\n  │  variant: ${variant.padEnd(28)}│\n  │  tier: ${tier.padEnd(31)}│\n  │  loaded ${String(count).padStart(3)} bookmarks${' '.repeat(18)}│\n  ╰─────────────────────────────────────╯\n`;
   console.log(
     '%c' + msg,
     'color:#9af3d8;font-family:JetBrains Mono,monospace;line-height:1.4;font-weight:500'

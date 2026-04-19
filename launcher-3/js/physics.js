@@ -16,6 +16,7 @@ import { flowField } from './noise.js';
 
 const TAU = Math.PI * 2;
 const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5)); // ~137.5°
+const SKIP_THRESHOLD = 0.05;
 
 export class Physics {
   constructor(app) {
@@ -358,12 +359,32 @@ export class Physics {
   }
 
   flushDOM() {
+    const tier = this.app.perf?.tier || 'full';
+    const coarse = tier === 'reduced' || tier === 'minimal';
     for (let i = 0; i < this.nodes.length; i++) {
       const n = this.nodes[i];
       if (!n.el) continue;
-      const scale = cssScaleFor(n);
+      const mustWrite = n.state === 'match' || n.state === 'unmatch';
+      if (!mustWrite && n._firstWriteDone) {
+        const speed = Math.abs(n.vx) + Math.abs(n.vy);
+        const dx = Math.abs((n._lastX ?? n.x) - n.x);
+        const dy = Math.abs((n._lastY ?? n.y) - n.y);
+        if (speed < SKIP_THRESHOLD && dx < 0.5 && dy < 0.5) continue;
+      }
+
+      if (n._lastState !== n.state || n._lastRel !== n.rel || n._cachedScale == null) {
+        n._cachedScale = cssScaleFor(n);
+        n._lastState = n.state;
+        n._lastRel = n.rel;
+      }
+      const scale = n._cachedScale;
+      const x = coarse ? n.x.toFixed(0) : n.x.toFixed(1);
+      const y = coarse ? n.y.toFixed(0) : n.y.toFixed(1);
       // translate3d + scale via transform; no layout thrash
-      n.el.style.transform = `translate3d(${n.x.toFixed(1)}px, ${n.y.toFixed(1)}px, 0) scale(${scale.toFixed(3)})`;
+      n.el.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${scale.toFixed(3)})`;
+      n._firstWriteDone = true;
+      n._lastX = n.x;
+      n._lastY = n.y;
     }
   }
 }
